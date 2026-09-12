@@ -1,0 +1,23 @@
+# Blueprint para conservar SQLite. El servicio y el disco tienen costo.
+# Revisa el importe que Render muestra antes de crear los recursos.
+# Referencia: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: registro-seguro-escolar
+    runtime: python
+    plan: 0.5c-512mb
+    numInstances: 1
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --workers 1 --threads 4 --bind 0.0.0.0:$PORT app:app
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_PATH
+        value: /var/data/users.sqlite3
+    disk:
+      name: usuarios-sqlite
+      mountPath: /var/data
+      sizeGB: 1
