@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Registro de usuarios{% endblock %}
+
+{% block content %}
+  <section class="page-heading" aria-labelledby="page-title">
+    <p class="eyebrow">Aprender haciendo</p>
+    <h1 id="page-title">Registro de usuarios</h1>
+    <p class="lead">Un formulario sencillo para practicar cómo recibir, guardar y mostrar datos de forma segura.</p>
+    <p class="privacy-note"><strong>Usa datos ficticios.</strong> El listado de esta demostración es público.</p>
+  </section>
+
+  <div class="workspace">
+    <section class="panel form-panel" aria-labelledby="form-title">
+      <div class="section-heading">
+        <span class="step-label">01 / Registrar</span>
+        <h2 id="form-title">Nuevo usuario</h2>
+        <p>Todos los campos son obligatorios.</p>
+      </div>
+      {% if errors %}
+        <p class="form-summary" role="alert">Revisa los campos señalados e inténtalo de nuevo.</p>
+      {% endif %}
+      <form action="{{ url_for('register') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="field">
+          <label for="name">Nombre</label>
+          <input id="name" name="name" type="text" value="{{ values.get('name', '') }}" required maxlength="80" autocomplete="off" placeholder="Ej. Alex Rivera" aria-describedby="name-hint{% if errors.get('name') %} name-error{% endif %}"{% if errors.get('name') %} aria-invalid="true"{% endif %}>
+          <p id="name-hint" class="field-hint">Hasta 80 caracteres.</p>
+          {% if errors.get('name') %}<p id="name-error" class="field-error">{{ errors['name'] }}</p>{% endif %}
+        </div>
+        <div class="field">
+          <label for="email">Correo electrónico</label>
+          <input id="email" name="email" type="email" value="{{ values.get('email', '') }}" required maxlength="254" autocomplete="off" spellcheck="false" placeholder="alex@example.com" aria-describedby="email-hint{% if errors.get('email') %} email-error{% endif %}"{% if errors.get('email') %} aria-invalid="true"{% endif %}>
+          <p id="email-hint" class="field-hint">Usa una dirección de ejemplo, como alex@example.com.</p>
+          {% if errors.get('email') %}<p id="email-error" class="field-error">{{ errors['email'] }}</p>{% endif %}
+        </div>
+        <div class="field">
+          <label for="age">Edad</label>
+          <input id="age" name="age" type="number" value="{{ values.get('age', '') }}" required min="0" max="120" step="1" maxlength="3" inputmode="numeric" autocomplete="off" placeholder="Ej. 21" aria-describedby="age-hint{% if errors.get('age') %} age-error{% endif %}"{% if errors.get('age') %} aria-invalid="true"{% endif %}>
+          <p id="age-hint" class="field-hint">Un número entero de 0 a 120.</p>
+          {% if errors.get('age') %}<p id="age-error" class="field-error">{{ errors['age'] }}</p>{% endif %}
+        </div>
+        <button class="button button-primary" type="submit">Registrar usuario <span aria-hidden="true">↗</span></button>
+        <p class="form-footnote">Los datos también se validan en el servidor.</p>
+      </form>
+    </section>
+
+    <section class="panel list-panel" aria-labelledby="list-title">
+      <div class="section-heading list-heading">
+        <div>
+          <span class="step-label">02 / Consultar</span>
+          <h2 id="list-title">Usuarios registrados</h2>
+        </div>
+        <span class="count">{{ total }} <span>{% if total == 1 %}registro{% else %}registros{% endif %}</span></span>
+      </div>
+      {% if users %}
+        <div class="table-wrapper" role="region" aria-label="Listado de usuarios; desliza horizontalmente para ver todas las columnas" tabindex="0">
+          <table>
+            <caption class="visually-hidden">Usuarios registrados en la demostración. Página {{ page }} de {{ pages }}.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Nombre</th>
+                <th scope="col">Correo</th>
+                <th scope="col" class="age-column">Edad</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for user in users %}
+                <tr>
+                  <td class="user-name">{{ user['name'] }}</td>
+                  <td class="user-email">{{ user['email'] }}</td>
+                  <td class="age-column">{{ user['age'] }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% if pages > 1 %}
+          <nav class="pagination" aria-label="Páginas del listado">
+            {% if page > 1 %}
+              <a class="button button-secondary" href="{{ url_for('index', page=page-1) }}" rel="prev">Anterior</a>
+            {% else %}
+              <span class="page-placeholder" aria-hidden="true"></span>
+            {% endif %}
+            <span class="page-number">{{ page }} de {{ pages }}</span>
+            {% if page < pages %}
+              <a class="button button-secondary" href="{{ url_for('index', page=page+1) }}" rel="next">Siguiente</a>
+            {% else %}
+              <span class="page-placeholder" aria-hidden="true"></span>
+            {% endif %}
+          </nav>
+        {% endif %}
+      {% else %}
+        <div class="empty-state">
+          <span class="empty-mark" aria-hidden="true">+</span>
+          <h3>Tu primer registro empieza aquí</h3>
+          <p>Completa el formulario con datos ficticios. Los usuarios aparecerán en este espacio.</p>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <details class="learning-note">
+    <summary>¿Qué medidas de seguridad demuestra esta app?</summary>
+    <div class="learning-content">
+      <p><strong>Validación y normalización.</strong> El servidor comprueba los campos y aplica reglas consistentes antes de guardar los datos.</p>
+      <p><strong>Consultas parametrizadas.</strong> SQLite recibe los valores como datos separados de las instrucciones SQL.</p>
+      <p><strong>Salida escapada.</strong> Las plantillas muestran el texto de los usuarios sin interpretarlo como HTML.</p>
+      <p><strong>Errores seguros y código reutilizable.</strong> Los mensajes públicos evitan detalles internos. El README explica las funciones compartidas y las pruebas de seguridad.</p>
+    </div>
+  </details>
+{% endblock %}
