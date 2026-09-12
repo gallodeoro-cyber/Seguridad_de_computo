@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+  <section class="panel error-panel" aria-labelledby="error-title">
+    <p class="eyebrow">Error {{ status }}</p>
+    <h1 id="error-title">{{ title }}</h1>
+    <p class="lead">{{ message }}</p>
+    {% if request_id %}
+      <p class="error-reference">Referencia para soporte: <code>{{ request_id }}</code></p>
+    {% endif %}
+    <a class="button button-primary" href="{{ url_for('index') }}">Volver al registro</a>
+  </section>
+{% endblock %}
