@@ -151,7 +151,9 @@ def create_app(test_config=None):
         )
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
-        response.headers["Referrer-Policy"] = "no-referrer"
+        # Flask-WTF comprueba el referente en solicitudes CSRF HTTPS.
+        # Permitirlo solo dentro del mismo origen evita filtrarlo a otros sitios.
+        response.headers["Referrer-Policy"] = "same-origin"
         response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
         response.headers["Cache-Control"] = "no-store"
         if production:
